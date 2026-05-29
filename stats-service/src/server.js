@@ -5,6 +5,12 @@ const { summary, byGenre, top } = require('./stats');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS : autorise le front (servi sur un autre port) à appeler ce service.
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', dependsOn: SYMFONY_API_URL });
 });

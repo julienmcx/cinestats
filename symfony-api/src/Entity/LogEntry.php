@@ -1,9 +1,8 @@
 <?php
-
 namespace App\Entity;
-
 use App\Repository\LogEntryRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LogEntryRepository::class)]
 class LogEntry implements \JsonSerializable
@@ -14,33 +13,36 @@ class LogEntry implements \JsonSerializable
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le titre est obligatoire')]
+    #[Assert\Length(max: 255)]
     private string $title = '';
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(min: 1888, max: 2100)]
     private ?int $year = null;
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $genre = null;
 
     #[ORM\Column(type: 'float')]
+    #[Assert\NotNull]
+    #[Assert\Range(min: 0.5, max: 5.0)]
     private float $rating = 0.0;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $review = null;
 
     #[ORM\Column(type: 'date_immutable')]
+    #[Assert\NotNull]
+    #[Assert\LessThanOrEqual('today', message: 'La date ne peut pas être dans le futur')]
     private \DateTimeImmutable $watchedAt;
 
     public function __construct()
     {
-        $this->watchedAt = new \DateTimeImmutable();
+        $this->watchedAt = new \DateTimeImmutable('today');
     }
 
-    public function isHighlyRated(): bool
-    {
-        return $this->rating >= 4.0;
-    }
-
+    public function isHighlyRated(): bool { return $this->rating >= 4.0; }
     public function getId(): ?int { return $this->id; }
     public function getTitle(): string { return $this->title; }
     public function setTitle(string $title): self { $this->title = $title; return $this; }

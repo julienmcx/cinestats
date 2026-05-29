@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineStats — Stats</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #eee; min-height: 100vh; }
+    header { background: #1a1a2e; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e94560; }
+    header h1 { color: #e94560; font-size: 1.8rem; }
+    nav a { color: #eee; text-decoration: none; margin-left: 20px; font-weight: 500; }
+    nav a:hover { color: #e94560; }
+    .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+    .stat-card { background: #1a1a2e; border-radius: 12px; padding: 28px; text-align: center; border: 1px solid #222; }
+    .stat-card .value { font-size: 2.8rem; font-weight: 700; color: #e94560; }
+    .stat-card .label { color: #888; margin-top: 6px; font-size: 0.95rem; }
+    h2 { margin-bottom: 20px; color: #e94560; }
+    .genre-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+    .genre-row { background: #1a1a2e; border-radius: 8px; padding: 14px 20px; display: flex; align-items: center; gap: 16px; }
+    .genre-name { width: 130px; font-weight: 600; }
+    .bar-wrap { flex: 1; background: #0f0f0f; border-radius: 20px; height: 10px; overflow: hidden; }
+    .bar { height: 100%; background: #e94560; border-radius: 20px; transition: width 0.6s; }
+    .genre-meta { color: #888; font-size: 0.85rem; white-space: nowrap; }
+    .top-list { display: flex; flex-direction: column; gap: 10px; }
+    .top-row { background: #1a1a2e; border-radius: 8px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .top-rank { color: #e94560; font-weight: 700; font-size: 1.1rem; width: 30px; }
+    .top-title { flex: 1; font-weight: 600; }
+    .top-year { color: #888; font-size: 0.85rem; margin-right: 16px; }
+    .top-rating { background: #e94560; color: #fff; padding: 3px 12px; border-radius: 20px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎬 CineStats</h1>
+    <nav>
+      <a href="/">Journal</a>
+      <a href="/stats.html">Stats</a>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="cards" id="summary">
+      <div class="stat-card"><div class="value">—</div><div class="label">Films vus</div></div>
+      <div class="stat-card"><div class="value">—</div><div class="label">Note moyenne</div></div>
+      <div class="stat-card"><div class="value">—</div><div class="label">Très bien notés (≥4)</div></div>
+    </div>
+    <h2>Par genre</h2>
+    <div class="genre-list" id="genres"></div>
+    <h2>Top 5</h2>
+    <div class="top-list" id="top"></div>
+  </div>
+  <script>
+    const BASE = 'http://localhost:3000';
+
+    async function loadStats() {
+      const [summary, genres, top] = await Promise.all([
+        fetch(`${BASE}/stats/summary`).then(r => r.json()),
+        fetch(`${BASE}/stats/by-genre`).then(r => r.json()),
+        fetch(`${BASE}/stats/top`).then(r => r.json()),
+      ]);
+
+      const cards = document.querySelectorAll('.stat-card .value');
+      cards[0].textContent = summary.totalFilms;
+      cards[1].textContent = summary.averageRating + ' / 5';
+      cards[2].textContent = summary.highlyRatedCount;
+
+      const maxCount = genres[0]?.count || 1;
+      document.getElementById('genres').innerHTML = genres.map(g => `
+        <div class="genre-row">
+          <div class="genre-name">${g.genre}</div>
+          <div class="bar-wrap"><div class="bar" style="width:${(g.count/maxCount)*100}%"></div></div>
+          <div class="genre-meta">${g.count} film${g.count > 1 ? 's' : ''} · ★ ${g.averageRating}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('top').innerHTML = top.map((f, i) => `
+        <div class="top-row">
+          <div class="top-rank">#${i+1}</div>
+          <div class="top-title">${f.title}</div>
+          <div class="top-year">${f.year || ''}</div>
+          <div class="top-rating">★ ${f.rating}</div>
+        </div>
+      `).join('');
+    }
+
+    loadStats();
+  </script>
+</body>
+</html>
