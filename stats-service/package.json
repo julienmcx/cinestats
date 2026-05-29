@@ -1,0 +1,16 @@
+{
+  "name": "stats-service",
+  "version": "1.0.0",
+  "description": "Microservice de statistiques pour CineStats (consomme l'API Symfony)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

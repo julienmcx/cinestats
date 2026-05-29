@@ -1,0 +1,4 @@
+symfony-api/vendor/
+symfony-api/var/
+symfony-api/.env.local
+stats-service/node_modules/

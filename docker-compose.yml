@@ -1,0 +1,14 @@
+services:
+  symfony-api:
+    build: ./symfony-api
+    ports:
+      - "8000:80"
+
+  stats-service:
+    build: ./stats-service
+    ports:
+      - "3000:3000"
+    environment:
+      SYMFONY_API_URL: http://symfony-api
+    depends_on:
+      - symfony-api

@@ -1,0 +1,5 @@
+vendor/
+var/
+.git/
+compose.yaml
+compose.override.yaml
