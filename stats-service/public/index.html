@@ -961,7 +961,6 @@
       return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
 
-    // ----- Modal + sélecteur d'étoiles -----
     let currentRating = 0;
     const overlay = $('overlay');
 
